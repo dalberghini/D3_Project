@@ -102,6 +102,19 @@ function updateToolTIp(clickedXAxis, clickedYAxis, circlesGroup) {
     return circlesGroup;
 }
 
+function textCircles(circlesGroup, newXScale, clickedXAxis) {
+    circlesGroup.transition()
+        .duration(1000)
+        .attr("dx", d=> newXScale(d[clickedXAxis]));
+    return circlesGroup;
+}
+
+function YtextCircles(circlesGroup, newYScale, clickedYAxis) {
+    circlesGroup.transition()
+        .duration(1000)
+        .attr("dy", d=> newYScale(d[clickedYAxis]));
+        return circlesGroup;
+}
 
 d3.csv("assets/data/data.csv").then(censusData => {
     console.log(censusData);
@@ -157,7 +170,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
         .attr("x", 0 - (chartHeight/2))
         .attr("y", 1 - margin.left)
         .attr("dy", "1em")
-        .classed("axis-text", true)
+        .classed("active", true)
         .attr("value", "obesity")
         .text("Obesity %");
     var smokeLabel = ylabelsGroup.append("text")
@@ -166,7 +179,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
         .attr("y", 15- margin.left )
         .attr("value", "smokes")
         .attr("dy", "1em")
-        .classed("axis-text", true)
+        .classed("inactive", true)
         .text("Smokes  %");
     var healthcareLabel  = ylabelsGroup.append("text")
         .attr("transform", "rotate(-90)")
@@ -174,7 +187,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
         .attr("y", 30 - margin.left)
         .attr("value", "healthcare")
         .attr("dy", "1em")
-        .classed("axis-text", true)
+        .classed("inactive", true)
         .text("Healthcare %");
     var povertyLabel = labelsGroup.append("text")
         .attr("x", 0)
@@ -205,8 +218,9 @@ d3.csv("assets/data/data.csv").then(censusData => {
                 clickedXAxis = value;
                 xLinearScale = xScale(censusData, clickedXAxis);
                 xAxis = renderAxes(xLinearScale, xAxis);
+                circlesText = textCircles(circlesText, xLinearScale, clickedXAxis);
                 circlesGroup = renderCircles(circlesGroup, xLinearScale, clickedXAxis);
-                circlesGroup = updateToolTIp(clickedXAxis, circlesGroup);
+                circlesGroup = updateToolTIp(clickedXAxis ,clickedYAxis, circlesGroup);
 
                 if(clickedXAxis === "age") {
                     ageLabel
@@ -250,6 +264,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
             clickedYAxis = yvalue;
             yLinearScale = yScale(censusData, clickedYAxis);
             yAxis = renderYAxes(yLinearScale, yAxis);
+            circlesText = YtextCircles(circlesText, yLinearScale, clickedYAxis);
             circlesGroup = renderCircles(circlesGroup, yLinearScale, clickedYAxis);
             circlesGroup = updateToolTIp(clickedXAxis ,clickedYAxis, circlesGroup);
 
