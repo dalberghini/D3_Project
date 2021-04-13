@@ -58,7 +58,8 @@ function renderCircles(circlesGroup, newXScale, clickedXAxis, newYScale, clicked
     circlesGroup.transition()
         .duration(1000)
         .attr("cx", d=> newXScale(d[clickedXAxis]))
-        .attr("cy", d=>newYScale(d[clickedYAxis]));
+        .attr("cy", d=>newYScale(d[clickedYAxis]))
+        .text("hi");
     return circlesGroup;
 }
 
@@ -121,6 +122,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
     var leftAxis = d3.axisLeft(yLinearScale);
     
     var xAxis = chartGroup.append("g")
+        // .classed("x-axis", true)
         .attr("transform", `translate(0, ${chartHeight})`)
         .call(bottomAxis);
     var yAxis = chartGroup.append("g")
@@ -128,7 +130,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
         .call(leftAxis);
 
     //create data points
-    var circlesGroup = chartGroup.selectAll("circle")
+    var circlesGroup = chartGroup.selectAll("g")
         .data(censusData)
         .enter()
         .append("circle")
@@ -138,41 +140,60 @@ d3.csv("assets/data/data.csv").then(censusData => {
         .attr("r", 20)
         .attr("fill", "blue")
         .attr("opacity", ".5");
+    
+    var circlesText = circlesGroup.append("text")
+        .text(d => d.abbr)
+        .classed("stateText", true)
+        .attr("dx", d => xLinearScale(d[clickedXAxis]))
+        .attr("dy", d => yLinearScale(d[clickedYAxis])+1);
 
     //create x and y labels
     var labelsGroup = chartGroup.append("g")
         .attr("transform", `translate(${chartWidth/2}, ${chartHeight +20})`);
-    var ylabelsGroup = chartGroup.append("g")
-        .attr("transform", `translate(-10, 750)`);
+    var ylabelsGroup = chartGroup.append("g");
+
     var obesityLabel = ylabelsGroup.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("x", 0 + (chartHeight/2))
-        .attr("y", 20 - margin.left)
+        .attr("x", 0 - (chartHeight/2))
+        .attr("y", 1 - margin.left)
+        .attr("dy", "1em")
+        .classed("axis-text", true)
+        .attr("value", "obesity")
         .text("Obesity %");
     var smokeLabel = ylabelsGroup.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("x", 0 + (chartHeight/2))
-    .attr("y", 40- margin.left )
-    .text("Smokes  %");
+        .attr("transform", "rotate(-90)")
+        .attr("x", 0 - (chartHeight/2))
+        .attr("y", 15- margin.left )
+        .attr("value", "smokes")
+        .attr("dy", "1em")
+        .classed("axis-text", true)
+        .text("Smokes  %");
     var healthcareLabel  = ylabelsGroup.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("x", 0 + (chartHeight/2))
-    .attr("y", 60 - margin.left)
-    .text("Healthcare %");
+        .attr("transform", "rotate(-90)")
+        .attr("x", 0 - (chartHeight/2))
+        .attr("y", 30 - margin.left)
+        .attr("value", "healthcare")
+        .attr("dy", "1em")
+        .classed("axis-text", true)
+        .text("Healthcare %");
     var povertyLabel = labelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 20)
         .attr("value", "poverty")
+        .attr("dx", "1em")
+        .classed("active", true)
         .text("Average Poverty %");
     var ageLabel = labelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 40)
         .attr("value", "age")
+        .classed("inactive", true)
         .text("Median Age");
     var incomeLabel = labelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 60)
         .attr("value", "income")
+        .classed("inactive", true)
         .text("Median Household Income");
     
     var circlesGroup = updateToolTIp(clickedXAxis, clickedYAxis, circlesGroup);
