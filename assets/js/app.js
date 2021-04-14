@@ -57,7 +57,6 @@ function renderCircles(circlesGroup, newXScale, clickedXAxis, newYScale, clicked
         .duration(1000)
         .attr("cx", d=> newXScale(d[clickedXAxis]))
         .attr("cy", d=>newYScale(d[clickedYAxis]))
-        .text("hi");
     return circlesGroup;
 }
 
@@ -100,19 +99,20 @@ function updateToolTIp(clickedXAxis, clickedYAxis, circlesGroup) {
     return circlesGroup;
 }
 
-function textCircles(circlesText, newXScale, clickedXAxis) {
+function textCircles(circlesGroup, newXScale, clickedXAxis, newYScale, clickedYAxis) {
     circlesGroup.transition()
         .duration(1000)
-        .attr("dx", d=> newXScale(d[clickedXAxis]));
-    return circlesText;
+        .attr("dx", d=> newXScale(d[clickedXAxis]))
+        .attr("dy", d=> newYScale(d[clickedYAxis]));
+    return circlesGroup;
 }
 
-function YtextCircles(circlesGroup, newYScale, clickedYAxis) {
-    circlesGroup.transition()
-        .duration(1000)
-        .attr("dy", d=> newYScale(d[clickedYAxis]));
-        return circlesText;
-}
+// function YtextCircles(circlesGroup, newYScale, clickedYAxis) {
+//     circlesGroup.transition()
+//         .duration(1000)
+//         .attr("dy", d=> newYScale(d[clickedYAxis]));
+//         return circlesGroup;
+// }
 
 d3.csv("assets/data/data.csv").then(censusData => {
     console.log(censusData);
@@ -133,7 +133,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
     var leftAxis = d3.axisLeft(yLinearScale);
     
     var xAxis = chartGroup.append("g")
-        // .classed("x-axis", true)
+        .classed("x-axis", true)
         .attr("transform", `translate(0, ${chartHeight})`)
         .call(bottomAxis);
     var yAxis = chartGroup.append("g")
@@ -209,8 +209,8 @@ d3.csv("assets/data/data.csv").then(censusData => {
                 clickedXAxis = value;
                 xLinearScale = xScale(censusData, clickedXAxis);
                 xAxis = renderAxes(xLinearScale, xAxis);
-                circlesText = textCircles(circlesText, xLinearScale, clickedXAxis);
-                appendedCircles = renderCircles(appendedCircles, xLinearScale, clickedXAxis);
+                circlesText = textCircles(circlesText, xLinearScale, clickedXAxis, yLinearScale, clickedYAxis);
+                appendedCircles = renderCircles(appendedCircles, xLinearScale, clickedXAxis, yLinearScale, clickedYAxis);
                 circlesGroup = updateToolTIp(clickedXAxis ,clickedYAxis, circlesGroup);
 
                 if(clickedXAxis === "age") {
@@ -255,8 +255,8 @@ d3.csv("assets/data/data.csv").then(censusData => {
             clickedYAxis = yvalue;
             yLinearScale = yScale(censusData, clickedYAxis);
             yAxis = renderYAxes(yLinearScale, yAxis);
-            circlesText = YtextCircles(circlesText, yLinearScale, clickedYAxis);
-            appendedCircles = renderCircles(appendedCircles, yLinearScale, clickedYAxis);
+            circlesText = textCircles(circlesText, xLinearScale, clickedXAxis, yLinearScale, clickedYAxis);
+            appendedCircles = renderCircles(appendedCircles, xLinearScale, clickedXAxis, yLinearScale, clickedYAxis);
             circlesGroup = updateToolTIp(clickedXAxis ,clickedYAxis, circlesGroup);
 
              if(clickedYAxis === "smokes") {
